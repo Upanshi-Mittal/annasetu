@@ -1,0 +1,163 @@
+# Translation of AnnaSetu into Hindi.
+# Copyright (C) 2026 AnnaSetu
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: AnnaSetu 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-17 12:00+0530\n"
+"PO-Revision-Date: 2026-11-17 12:00+0530\n"
+"Last-Translator: AnnaSetu Team\n"
+"Language-Team: Hindi\n"
+"Language: hi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "English"
+msgstr "अंग्रेज़ी"
+
+msgid "Hindi"
+msgstr "हिन्दी"
+
+msgid "Food Feed"
+msgstr "भोजन फ़ीड"
+
+msgid "Impact"
+msgstr "प्रभाव"
+
+msgid "Heroes"
+msgstr "नायक"
+
+msgid "Deliveries"
+msgstr "डिलीवरी"
+
+msgid "Donate Food"
+msgstr "भोजन दान करें"
+
+msgid "Sign In"
+msgstr "लॉग इन"
+
+msgid "Join Now"
+msgstr "शामिल हों"
+
+msgid "Good food deserves a"
+msgstr "अच्छे भोजन को"
+
+msgid "plate"
+msgstr "थाली"
+
+msgid "not a bin."
+msgstr "मिलनी चाहिए, कचरादान नहीं।"
+
+msgid "Meals Rescued"
+msgstr "भोजन बचाया गया"
+
+msgid "Food Diverted"
+msgstr "बचाया गया भोजन"
+
+msgid "CO₂e Prevented"
+msgstr "CO₂ उत्सर्जन रोका गया"
+
+msgid "Partner NGOs & Kitchens"
+msgstr "सहयोगी एनजीओ और रसोई"
+
+msgid "How AnnaSetu Works"
+msgstr "अन्नसेतु कैसे काम करता है"
+
+msgid "Post Surplus Food"
+msgstr "अतिरिक्त भोजन दर्ज करें"
+
+msgid "Smart Match & Claim"
+msgstr "स्मार्ट मैच और क्लेम"
+
+msgid "Volunteer Pickup"
+msgstr "स्वयंसेवक पिकअप"
+
+msgid "Verified Delivery"
+msgstr "सत्यापित डिलीवरी"
+
+msgid "For Donors"
+msgstr "दाताओं के लिए"
+
+msgid "For NGOs"
+msgstr "एनजीओ के लिए"
+
+msgid "For Volunteers"
+msgstr "स्वयंसेवकों के लिए"
+
+msgid "CSR Impact Certificates"
+msgstr "सीएसआर प्रभाव प्रमाणपत्र"
+
+msgid "100% Verified Partners"
+msgstr "100% सत्यापित साथी"
+
+msgid "Doorstep Handoff"
+msgstr "द्वार पर सुपुर्दगी"
+
+msgid "Instant Proximity Alerts"
+msgstr "तुरंत नजदीकी अलर्ट"
+
+msgid "Daily Capacity Controls"
+msgstr "दैनिक क्षमता नियंत्रण"
+
+msgid "Food Safety Checklist"
+msgstr "खाद्य सुरक्षा चेकलिस्ट"
+
+msgid "Points & Badges"
+msgstr "अंक और बैज"
+
+msgid "Smart Task Routing"
+msgstr "स्मार्ट टास्क रूटिंग"
+
+msgid "Mobile First"
+msgstr "मोबाइल-अनुकूल"
+
+msgid "Cryptographic Chain of Custody"
+msgstr "सत्यापित सुरक्षित हस्तांतरण"
+
+msgid "Frequently Asked Questions"
+msgstr "अक्सर पूछे जाने वाले प्रश्न"
+
+msgid "Ready to turn food surplus into smiles?"
+msgstr "क्या आप अतिरिक्त भोजन को मुस्कान में बदलने के लिए तैयार हैं?"
+
+msgid "Get Started Today"
+msgstr "आज ही शुरू करें"
+
+msgid "Available Food Feed"
+msgstr "उपलब्ध भोजन फ़ीड"
+
+msgid "Rescue Surplus Food"
+msgstr "अतिरिक्त भोजन बचाएं"
+
+msgid "Claim Food Surplus"
+msgstr "भोजन क्लेम करें"
+
+msgid "Confirm Claim"
+msgstr "क्लेम की पुष्टि करें"
+
+msgid "Scan QR Code"
+msgstr "क्यूआर कोड स्कैन करें"
+
+msgid "Food Safety Verification"
+msgstr "खाद्य सुरक्षा सत्यापन"
+
+msgid "Confirm Safety Verification"
+msgstr "सुरक्षा सत्यापन की पुष्टि करें"
+
+msgid "Hall of Heroes"
+msgstr "नायकों की सूची"
+
+msgid "Top Volunteer Rescuers"
+msgstr "शीर्ष स्वयंसेवक"
+
+msgid "Hunger Hero Donors"
+msgstr "अन्नदाता नायक"
+
+msgid "Authentic & Verified"
+msgstr "प्रामाणिक और सत्यापित"
+
+msgid "AnnaSetu Food Rescue Certificate"
+msgstr "अन्नसेतु खाद्य सुरक्षा व राहत प्रमाणपत्र"

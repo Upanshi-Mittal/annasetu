@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% if donation %}{% trans "Edit Food Listing" %}{% else %}{% trans "Post Food Listing" %}{% endif %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+    <div class="border-b border-stone-200 dark:border-stone-700 pb-4">
+        <span class="text-xs font-semibold uppercase tracking-wider text-leaf-600">{% trans "Food Rescue Action" %}</span>
+        <h1 class="font-serif text-3xl font-bold mt-1">
+            {% if donation %}{% trans "Edit Donation Listing" %}{% else %}{% trans "Share Surplus Food" %}{% endif %}
+        </h1>
+        <p class="text-xs text-stone-500">{% trans "Fill in details so nearby verified NGOs can review and claim your food immediately" %}</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="p-8 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-xl space-y-6">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+        <div class="p-4 rounded-xl bg-red-50 text-red-700 text-xs border border-red-200">
+            {{ form.non_field_errors.0 }}
+        </div>
+        {% endif %}
+
+        <!-- Food Title -->
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
+                {% trans "Listing Title" %} <span class="text-red-500">*</span>
+            </label>
+            {{ form.title }}
+            {% if form.title.errors %}<p class="text-xs text-red-500 mt-1">{{ form.title.errors.0 }}</p>{% endif %}
+        </div>
+
+        <!-- Description -->
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
+                {% trans "Description & Packaging Notes" %}
+            </label>
+            {{ form.description }}
+        </div>
+
+        <!-- Quantity & Type in 2 columns -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
+                    {% trans "Estimated Servings" %} <span class="text-red-500">*</span>
+                </label>
+                {{ form.quantity_servings }}
+                <p class="text-[11px] text-stone-400 mt-1">{% trans "Rule of thumb: ~400g per meal" %}</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
+                    {% trans "Food Type" %} <span class="text-red-500">*</span>
+                </label>
+                <div class="grid grid-cols-3 gap-2">
+                    <label class="flex items-center justify-center p-3 rounded-xl border border-stone-300 dark:border-stone-600 cursor-pointer hover:border-leaf-600 text-xs font-semibold">
+                        <input type="radio" name="food_type" value="veg" checked class="mr-1.5 text-leaf-600"> {% trans "Veg" %}
+                    </label>
+                    <label class="flex items-center justify-center p-3 rounded-xl border border-stone-300 dark:border-stone-600 cursor-pointer hover:border-leaf-600 text-xs font-semibold">
+                        <input type="radio" name="food_type" value="nonveg" class="mr-1.5 text-leaf-600"> {% trans "Non-Veg" %}
+                    </label>
+                    <label class="flex items-center justify-center p-3 rounded-xl border border-stone-300 dark:border-stone-600 cursor-pointer hover:border-leaf-600 text-xs font-semibold">
+                        <input type="radio" name="food_type" value="jain" class="mr-1.5 text-leaf-600"> {% trans "Jain" %}
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cooked or Packaged Checkbox -->
+        <div class="p-4 rounded-2xl bg-stone-50 dark:bg-night-900 border border-stone-200 dark:border-stone-700 flex items-center justify-between">
+            <div>
+                <span class="text-sm font-semibold">{% trans "Freshly Cooked Food?" %}</span>
+                <span class="block text-xs text-stone-500">{% trans "Uncheck if packaged, canned, or bakery items" %}</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                {{ form.is_cooked }}
+            </label>
+        </div>
+
+        <!-- Safe Until & Quick Presets -->
+        <div class="space-y-2" x-data="{
+            setPreset(hours) {
+                let now = new Date();
+                now.setHours(now.getHours() + hours);
+                let iso = now.toISOString().slice(0, 16);
+                document.getElementById('id_safe_until').value = iso;
+            }
+        }">
+            <div class="flex justify-between items-center">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400">
+                    {% trans "Safe Until (Expiry)" %} <span class="text-red-500">*</span>
+                </label>
+                <!-- Quick Preset Chips -->
+                <div class="flex gap-1.5 text-[11px]">
+                    <span class="text-stone-400">{% trans "Presets:" %}</span>
+                    <button type="button" @click="setPreset(2)" class="px-2 py-0.5 rounded-lg bg-stone-100 dark:bg-night-700 font-semibold hover:bg-leaf-100 text-leaf-700 dark:text-leaf-300">+2h</button>
+                    <button type="button" @click="setPreset(4)" class="px-2 py-0.5 rounded-lg bg-stone-100 dark:bg-night-700 font-semibold hover:bg-leaf-100 text-leaf-700 dark:text-leaf-300">+4h</button>
+                    <button type="button" @click="setPreset(6)" class="px-2 py-0.5 rounded-lg bg-stone-100 dark:bg-night-700 font-semibold hover:bg-leaf-100 text-leaf-700 dark:text-leaf-300">+6h</button>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[11px] text-stone-400 block mb-1">{% trans "Ready for Pickup From" %}</label>
+                    {{ form.pickup_from }}
+                </div>
+                <div>
+                    <label class="text-[11px] text-stone-400 block mb-1">{% trans "Safe Until" %}</label>
+                    {{ form.safe_until }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">
+                {% trans "Food Photo (Optional)" %}
+            </label>
+            {{ form.photo }}
+        </div>
+
+        <!-- Location & Map -->
+        <div class="space-y-2">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400">
+                {% trans "Pickup Location Pin" %} <span class="text-red-500">*</span>
+            </label>
+            {{ form.pickup_address }}
+            <div id="pin-map" class="h-60 w-full rounded-2xl border border-stone-200 dark:border-stone-700 mt-2 z-10"></div>
+            {{ form.latitude }}
+            {{ form.longitude }}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-4 border-t border-stone-100 dark:border-stone-700 flex justify-end">
+            <button type="submit" class="py-3.5 px-8 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-lg shadow-leaf-600/30 transition-all">
+                {% if donation %}{% trans "Save Changes" %}{% else %}{% trans "Post Food Listing" %} &rarr;{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var latInput = document.getElementById('id_latitude');
+        var lngInput = document.getElementById('id_longitude');
+
+        var initialLat = parseFloat(latInput.value) || 28.6139;
+        var initialLng = parseFloat(lngInput.value) || 77.2090;
+
+        var map = L.map('pin-map').setView([initialLat, initialLng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
+
+        function updateCoords(lat, lng) {
+            latInput.value = lat.toFixed(6);
+            lngInput.value = lng.toFixed(6);
+        }
+
+        map.on('click', function(e) {
+            marker.setLatLng(e.latlng);
+            updateCoords(e.latlng.lat, e.latlng.lng);
+        });
+
+        marker.on('dragend', function(e) {
+            var pos = marker.getLatLng();
+            updateCoords(pos.lat, pos.lng);
+        });
+
+        // Set default pickup_from to now if empty
+        var fromEl = document.getElementById('id_pickup_from');
+        if (fromEl && !fromEl.value) {
+            fromEl.value = new Date().toISOString().slice(0, 16);
+        }
+        var untilEl = document.getElementById('id_safe_until');
+        if (untilEl && !untilEl.value) {
+            var d = new Date();
+            d.setHours(d.getHours() + 4);
+            untilEl.value = d.toISOString().slice(0, 16);
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-leaf-100/50 via-transparent to-transparent dark:from-night-800/40 pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <!-- Live Pill -->
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-leaf-100 dark:bg-leaf-950/60 text-leaf-800 dark:text-leaf-300 border border-leaf-200 dark:border-leaf-800">
+                    <span class="w-2 h-2 rounded-full bg-leaf-600 animate-ping"></span>
+                    {% trans "India's Verifiable Real-Time Food Rescue Bridge" %}
+                </div>
+
+                <!-- Headline -->
+                <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-leaf-950 dark:text-leaf-50 leading-[1.15]">
+                    {% trans "Good food deserves a" %} <span class="text-leaf-600 underline decoration-saffron-400 decoration-wavy decoration-2">{% trans "plate" %}</span>, {% trans "not a bin." %}
+                </h1>
+
+                <p class="text-lg text-stone-600 dark:text-stone-300 max-w-2xl leading-relaxed">
+                    {% trans "AnnaSetu connects surplus food from restaurants, caterers, weddings, and homes with verified NGOs in real time — with cryptographic QR verification at every handoff." %}
+                </p>
+
+                <!-- Dual CTAs -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-2">
+                    <a href="{% url 'register' %}" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-base font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-lg shadow-leaf-600/30 hover:-translate-y-0.5 transition-all">
+                        <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                        {% trans "I have surplus food" %}
+                    </a>
+                    <a href="{% url 'register' %}" class="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl text-base font-semibold text-stone-800 dark:text-stone-100 bg-white dark:bg-night-800 hover:bg-stone-50 dark:hover:bg-night-700 border border-stone-200 dark:border-stone-700 shadow-sm hover:-translate-y-0.5 transition-all">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-saffron-500"></i>
+                        {% trans "I'm an NGO or Volunteer" %}
+                    </a>
+                </div>
+
+                <div class="pt-4 flex items-center justify-center lg:justify-start gap-6 text-xs text-stone-500 dark:text-stone-400">
+                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-leaf-600"></i> {% trans "100% Free & Open" %}</span>
+                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-leaf-600"></i> {% trans "FSSAI Safety Guidelines" %}</span>
+                    <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-leaf-600"></i> {% trans "CSR Impact Ready" %}</span>
+                </div>
+            </div>
+
+            <!-- Floating Hero Cards Graphic -->
+            <div class="lg:col-span-5 relative">
+                <div class="relative mx-auto max-w-sm lg:max-w-none">
+                    <div class="rounded-3xl p-6 bg-white dark:bg-night-800 shadow-2xl border border-stone-200/80 dark:border-stone-700/80 relative z-10 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-saffron-100 text-saffron-800 dark:bg-saffron-950/60 dark:text-saffron-300">
+                                {% trans "🔥 Urgent Rescue" %}
+                            </span>
+                            <span class="text-xs text-stone-500 flex items-center gap-1">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i> {% trans "45 mins left" %}
+                            </span>
+                        </div>
+                        <h3 class="font-serif text-xl font-bold">120 Meals — Fresh Paneer & Dal</h3>
+                        <p class="text-xs text-stone-500 dark:text-stone-400">The Grand Banquet Hall, Bareilly Central</p>
+                        
+                        <div class="p-3 rounded-2xl bg-stone-50 dark:bg-night-900 flex justify-between items-center text-xs">
+                            <div>
+                                <span class="text-stone-400 block">{% trans "Assigned NGO" %}</span>
+                                <span class="font-semibold text-leaf-600">Rotary Food Mission</span>
+                            </div>
+                            <span class="px-2 py-1 rounded-lg bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 font-medium">{% trans "Picked Up" %}</span>
+                        </div>
+
+                        <!-- Progress Line -->
+                        <div class="w-full bg-stone-200 dark:bg-stone-700 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-leaf-600 h-full w-3/4 rounded-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Floating live tag -->
+                    <div class="absolute -bottom-6 -left-6 z-20 rounded-2xl p-4 bg-leaf-700 text-white shadow-xl flex items-center gap-3">
+                        <div class="p-2 rounded-xl bg-white/20">
+                            <i data-lucide="award" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs text-leaf-200">{% trans "Total Rescued" %}</div>
+                            <div class="text-lg font-bold">12,450+ {% trans "Meals" %}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Impact Numbers Strip (Animated Count-Up) -->
+<section class="py-12 bg-white dark:bg-night-800 border-y border-stone-200 dark:border-stone-800" x-data="{
+    counts: { meals: 0, kg: 0, co2: 0, partners: 0 },
+    targets: { meals: {{ total_meals|default:12450 }}, kg: {{ total_kg|default:4980 }}, co2: {{ co2_saved|default:12450 }}, partners: {{ partner_count|default:48 }} },
+    init() {
+        let duration = 1500;
+        let stepTime = 30;
+        let steps = duration / stepTime;
+        let count = 0;
+        let timer = setInterval(() => {
+            count++;
+            this.counts.meals = Math.floor((this.targets.meals / steps) * count);
+            this.counts.kg = Math.floor((this.targets.kg / steps) * count);
+            this.counts.co2 = Math.floor((this.targets.co2 / steps) * count);
+            this.counts.partners = Math.floor((this.targets.partners / steps) * count);
+            if (count >= steps) {
+                this.counts = this.targets;
+                clearInterval(timer);
+            }
+        }, stepTime);
+    }
+}">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            <div class="space-y-1">
+                <div class="font-serif text-3xl sm:text-4xl font-bold text-leaf-600" x-text="counts.meals.toLocaleString() + '+'">12,450+</div>
+                <div class="text-sm font-medium text-stone-600 dark:text-stone-300">{% trans "Meals Rescued" %}</div>
+                <div class="text-xs text-stone-400">{% trans "Direct to hungry bellies" %}</div>
+            </div>
+            <div class="space-y-1">
+                <div class="font-serif text-3xl sm:text-4xl font-bold text-leaf-600" x-text="counts.kg.toLocaleString() + ' kg'">4,980 kg</div>
+                <div class="text-sm font-medium text-stone-600 dark:text-stone-300">{% trans "Food Diverted" %}</div>
+                <div class="text-xs text-stone-400">{% trans "From reaching landfills" %}</div>
+            </div>
+            <div class="space-y-1">
+                <div class="font-serif text-3xl sm:text-4xl font-bold text-saffron-500" x-text="counts.co2.toLocaleString() + ' kg'">12,450 kg</div>
+                <div class="text-sm font-medium text-stone-600 dark:text-stone-300">{% trans "CO₂e Prevented" %}</div>
+                <div class="text-xs text-stone-400">{% trans "Greenhouse gas avoided" %}</div>
+            </div>
+            <div class="space-y-1">
+                <div class="font-serif text-3xl sm:text-4xl font-bold text-leaf-600" x-text="counts.partners.toLocaleString() + '+'">48+</div>
+                <div class="text-sm font-medium text-stone-600 dark:text-stone-300">{% trans "Partner NGOs & Kitchens" %}</div>
+                <div class="text-xs text-stone-400">{% trans "Verified local champions" %}</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works (4 Steps) -->
+<section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto space-y-3 mb-16">
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight">{% trans "How AnnaSetu Works" %}</h2>
+        <p class="text-stone-600 dark:text-stone-300 text-sm sm:text-base">{% trans "Near real-time coordination and unbreakable accountability at every step." %}</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+        <!-- Step 1 -->
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm relative group hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-2xl bg-leaf-100 dark:bg-leaf-950/60 text-leaf-700 dark:text-leaf-300 flex items-center justify-center font-bold text-xl mb-4">1</div>
+            <h3 class="font-serif text-lg font-bold mb-2">{% trans "Post Surplus Food" %}</h3>
+            <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                {% trans "A caterer, restaurant, or individual posts food quantity, photo, veg/non-veg status, and safe consumption window." %}
+            </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm relative group hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-2xl bg-leaf-100 dark:bg-leaf-950/60 text-leaf-700 dark:text-leaf-300 flex items-center justify-center font-bold text-xl mb-4">2</div>
+            <h3 class="font-serif text-lg font-bold mb-2">{% trans "Smart Match & Claim" %}</h3>
+            <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                {% trans "Nearby verified NGOs receive instant alerts. Scoring matches capacity and proximity. NGO claims food in one tap." %}
+            </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm relative group hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-2xl bg-saffron-100 dark:bg-saffron-950/60 text-saffron-700 dark:text-saffron-300 flex items-center justify-center font-bold text-xl mb-4">3</div>
+            <h3 class="font-serif text-lg font-bold mb-2">{% trans "Volunteer Pickup" %}</h3>
+            <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                {% trans "A volunteer accepts the pickup task, inspects safety, and scans the donor's cryptographically signed QR code." %}
+            </p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm relative group hover:shadow-lg transition-shadow">
+            <div class="w-12 h-12 rounded-2xl bg-leaf-100 dark:bg-leaf-950/60 text-leaf-700 dark:text-leaf-300 flex items-center justify-center font-bold text-xl mb-4">4</div>
+            <h3 class="font-serif text-lg font-bold mb-2">{% trans "Verified Delivery" %}</h3>
+            <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                {% trans "The NGO scans the volunteer's delivery QR code upon arrival. Both parties rate each other, and audit trail completes." %}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Role-Based Tabs (Donors / NGOs / Volunteers) -->
+<section class="py-16 bg-stone-100/60 dark:bg-night-800/60 border-y border-stone-200 dark:border-stone-800" x-data="{ tab: 'donors' }">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-xl mx-auto mb-10">
+            <h2 class="font-serif text-3xl font-bold">{% trans "Designed for Everyone on the Bridge" %}</h2>
+            <div class="flex justify-center gap-2 mt-6">
+                <button @click="tab = 'donors'" :class="{ 'bg-leaf-600 text-white': tab === 'donors', 'bg-white dark:bg-night-800 text-stone-600 dark:text-stone-300': tab !== 'donors' }" class="px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm">
+                    {% trans "For Donors" %}
+                </button>
+                <button @click="tab = 'ngos'" :class="{ 'bg-leaf-600 text-white': tab === 'ngos', 'bg-white dark:bg-night-800 text-stone-600 dark:text-stone-300': tab !== 'ngos' }" class="px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm">
+                    {% trans "For NGOs" %}
+                </button>
+                <button @click="tab = 'volunteers'" :class="{ 'bg-leaf-600 text-white': tab === 'volunteers', 'bg-white dark:bg-night-800 text-stone-600 dark:text-stone-300': tab !== 'volunteers' }" class="px-5 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm">
+                    {% trans "For Volunteers" %}
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+            <!-- Donors Tab -->
+            <div x-show="tab === 'donors'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="award" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "CSR Impact Certificates" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Download verifiable PDF certificates for CSR reporting with exact kg & CO2 calculations." %}</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="shield" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "100% Verified Partners" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Only vetted, document-verified NGOs can claim food. Know your food is reaching legitimate plates." %}</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="map-pin" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "Doorstep Handoff" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Volunteers or NGO drivers come right to your pickup pin so your staff never loses time." %}</p>
+                </div>
+            </div>
+
+            <!-- NGOs Tab -->
+            <div x-show="tab === 'ngos'" x-cloak class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="bell-ring" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "Instant Proximity Alerts" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Get real-time alerts the moment food is posted within your custom operating radius." %}</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="sliders" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "Daily Capacity Controls" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Set your kitchen serving capacity per day and veg-only preferences to prevent surplus overload." %}</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="check-square" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "Food Safety Checklist" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Standardized 4-point safety verification before pickup protects your beneficiaries." %}</p>
+                </div>
+            </div>
+
+            <!-- Volunteers Tab -->
+            <div x-show="tab === 'volunteers'" x-cloak class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="trophy" class="w-8 h-8 text-saffron-500 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "Points & Badges" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Earn points for urgent rescues, maintain streaks, and climb the city Hall of Heroes." %}</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="navigation" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "Smart Task Routing" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Pickup and delivery locations with integrated route coordinates and quick scan." %}</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700">
+                    <i data-lucide="smartphone" class="w-8 h-8 text-leaf-600 mb-3"></i>
+                    <h4 class="font-bold mb-1">{% trans "Mobile First" %}</h4>
+                    <p class="text-xs text-stone-500">{% trans "Optimized for mobile web with camera-based QR scanner and zero app installation required." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trust Section (QR Chain-of-Custody & Safety) -->
+<section class="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="rounded-3xl bg-leaf-900 text-white p-8 lg:p-14 shadow-2xl relative overflow-hidden">
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div class="space-y-4">
+                <span class="text-xs font-semibold px-3 py-1 rounded-full bg-leaf-800 text-leaf-200 uppercase tracking-wider">
+                    {% trans "Security & Traceability" %}
+                </span>
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold leading-tight">
+                    {% trans "Cryptographic Chain of Custody" %}
+                </h2>
+                <p class="text-leaf-200 text-sm leading-relaxed">
+                    {% trans "Unlike informal food drops, AnnaSetu enforces a tamper-proof handoff timeline. Each rescue generates two time-bounded digital tokens." %}
+                </p>
+                <div class="space-y-3 pt-2 text-xs">
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-full bg-leaf-600 flex items-center justify-center font-bold text-xs">✓</div>
+                        <span>{% trans "Pickup QR scan verifies donor handoff and logs food-safety checklist." %}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-6 h-6 rounded-full bg-leaf-600 flex items-center justify-center font-bold text-xs">✓</div>
+                        <span>{% trans "Delivery QR scan verifies NGO receipt and triggers CSR impact credit." %}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center">
+                <div class="bg-white p-6 rounded-3xl shadow-xl text-stone-900 text-center max-w-xs w-full space-y-3">
+                    <div class="w-36 h-36 mx-auto bg-stone-100 rounded-2xl flex items-center justify-center border-2 border-dashed border-stone-300">
+                        <i data-lucide="qr-code" class="w-24 h-24 text-stone-700"></i>
+                    </div>
+                    <div class="text-xs font-bold text-stone-800">{% trans "Signed Time-Expiring Token" %}</div>
+                    <div class="text-[11px] text-stone-500">{% trans "Scannable directly in mobile browser without installing any app" %}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Accordion -->
+<section class="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ active: null }">
+    <div class="text-center mb-12">
+        <h2 class="font-serif text-3xl font-bold">{% trans "Frequently Asked Questions" %}</h2>
+    </div>
+    <div class="space-y-4">
+        <div class="rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-night-800 p-4">
+            <button @click="active = active === 1 ? null : 1" class="w-full flex justify-between items-center text-left font-semibold text-sm">
+                <span>{% trans "How is food safety ensured?" %}</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': active === 1 }"></i>
+            </button>
+            <div x-show="active === 1" x-cloak class="mt-3 text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                {% trans "All listings include safe-until limits. Volunteers must complete a 4-point safety checklist (temperature, smell, packaging, time limit) before picking up food." %}
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-night-800 p-4">
+            <button @click="active = active === 2 ? null : 2" class="w-full flex justify-between items-center text-left font-semibold text-sm">
+                <span>{% trans "Can individuals donate surplus home food?" %}</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': active === 2 }"></i>
+            </button>
+            <div x-show="active === 2" x-cloak class="mt-3 text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                {% trans "Yes! Anyone with surplus cooked or packaged food can register as a donor and post food. Community kitchens and animal shelters benefit from donations of all sizes." %}
+            </div>
+        </div>
+
+        <div class="rounded-2xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-night-800 p-4">
+            <button @click="active = active === 3 ? null : 3" class="w-full flex justify-between items-center text-left font-semibold text-sm">
+                <span>{% trans "How do CSR certificates work?" %}</span>
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" :class="{ 'rotate-180': active === 3 }"></i>
+            </button>
+            <div x-show="active === 3" x-cloak class="mt-3 text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                {% trans "Every delivered donation generates a cryptographically serial-numbered PDF certificate that can be publicly validated at /verify/<serial>/ for CSR and ESG disclosures." %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Final Bold CTA Band -->
+<section class="py-16 bg-leaf-600 text-white text-center">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <h2 class="font-serif text-3xl sm:text-4xl font-bold">{% trans "Ready to turn food surplus into smiles?" %}</h2>
+        <p class="text-leaf-100 max-w-xl mx-auto text-sm sm:text-base">
+            {% trans "Join hundreds of restaurants, caterers, NGOs, and volunteers making India hunger-free." %}
+        </p>
+        <div>
+            <a href="{% url 'register' %}" class="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-base font-bold bg-white text-leaf-800 hover:bg-stone-50 shadow-xl hover:scale-105 transition-all">
+                {% trans "Get Started Today" %} <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Sign In" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="min-h-[75vh] flex items-center justify-center px-4 py-12">
+    <div class="max-w-md w-full p-8 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-xl space-y-6">
+        <div class="text-center space-y-2">
+            <h1 class="font-serif text-3xl font-bold text-leaf-950 dark:text-leaf-50">{% trans "Welcome back" %}</h1>
+            <p class="text-xs text-stone-500">{% trans "Sign in to manage donations, claims, and deliveries" %}</p>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">{% trans "Username" %}</label>
+                {{ form.username }}
+            </div>
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-600 dark:text-stone-400 mb-1">{% trans "Password" %}</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="w-full py-3.5 px-4 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md shadow-leaf-600/30 transition-all">
+                {% trans "Sign In" %}
+            </button>
+        </form>
+
+        <div class="pt-4 border-t border-stone-100 dark:border-stone-700 text-center text-xs text-stone-500">
+            {% trans "Don't have an account?" %} <a href="{% url 'register' %}" class="font-semibold text-leaf-600 hover:underline">{% trans "Register here" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

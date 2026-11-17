@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Hall of Heroes & Leaderboard" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <div class="text-center max-w-2xl mx-auto space-y-2 border-b border-stone-200 dark:border-stone-800 pb-6">
+        <span class="text-xs font-semibold uppercase tracking-wider text-saffron-600">{% trans "Recognition & Badges" %}</span>
+        <h1 class="font-serif text-4xl font-bold">{% trans "Hall of Heroes" %}</h1>
+        <p class="text-xs text-stone-500">{% trans "Celebrating the volunteers and food donors driving zero hunger in our cities" %}</p>
+    </div>
+
+    <!-- Leaderboard Grids (Volunteers & Donors) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Volunteer Champions -->
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="trophy" class="w-5 h-5 text-saffron-500"></i>
+                <h3 class="font-serif text-xl font-bold">{% trans "Top Volunteer Rescuers" %}</h3>
+            </div>
+            <div class="divide-y divide-stone-100 dark:divide-stone-700">
+                {% for v in top_volunteers %}
+                <div class="py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 text-center text-xs font-bold text-stone-400">#{{ forloop.counter }}</span>
+                        <div>
+                            <span class="text-sm font-bold block">{{ v.display_name }}</span>
+                            <span class="text-xs text-stone-400">{{ v.reliability_score|floatformat:1 }}★ Trust</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-bold text-leaf-600">{{ v.total_points|default:120 }} pts</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-4 text-center text-xs text-stone-400">{% trans "No volunteer points logged yet." %}</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Donor Champions -->
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="heart" class="w-5 h-5 text-red-500"></i>
+                <h3 class="font-serif text-xl font-bold">{% trans "Hunger Hero Donors" %}</h3>
+            </div>
+            <div class="divide-y divide-stone-100 dark:divide-stone-700">
+                {% for d in top_donors %}
+                <div class="py-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 text-center text-xs font-bold text-stone-400">#{{ forloop.counter }}</span>
+                        <div>
+                            <span class="text-sm font-bold block">{{ d.display_name }}</span>
+                            <span class="text-xs text-stone-400">{{ d.reliability_score|floatformat:1 }}★ Trust</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs font-bold text-leaf-600">{{ d.donations_count|default:5 }} {% trans "donations" %}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="p-4 text-center text-xs text-stone-400">{% trans "No donors registered yet." %}</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Badges Showcase -->
+    <div class="p-6 rounded-3xl bg-stone-50 dark:bg-night-900 border border-stone-200 dark:border-stone-700 space-y-4">
+        <h3 class="font-serif text-lg font-bold">{% trans "Rescue Badges to Unlock" %}</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {% for b in all_badges %}
+            <div class="p-4 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 text-center space-y-1">
+                <div class="w-10 h-10 rounded-full mx-auto flex items-center justify-center text-white" style="background-color: {{ b.color }}">
+                    <i data-lucide="{{ b.icon }}" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-xs">{{ b.name }}</h4>
+                <p class="text-[11px] text-stone-400">{{ b.description }}</p>
+            </div>
+            {% empty %}
+            <div class="p-4 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 text-center space-y-1">
+                <div class="w-10 h-10 rounded-full bg-leaf-600 mx-auto flex items-center justify-center text-white">
+                    <i data-lucide="award" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-xs">First Rescue</h4>
+                <p class="text-[11px] text-stone-400">Completed 1st food delivery</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 text-center space-y-1">
+                <div class="w-10 h-10 rounded-full bg-saffron-500 mx-auto flex items-center justify-center text-white">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-xs">Night Owl</h4>
+                <p class="text-[11px] text-stone-400">Late night wedding rescue</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 text-center space-y-1">
+                <div class="w-10 h-10 rounded-full bg-blue-600 mx-auto flex items-center justify-center text-white">
+                    <i data-lucide="shield" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-xs">Centurion</h4>
+                <p class="text-[11px] text-stone-400">Rescued 100+ meals</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 text-center space-y-1">
+                <div class="w-10 h-10 rounded-full bg-purple-600 mx-auto flex items-center justify-center text-white">
+                    <i data-lucide="star" class="w-5 h-5"></i>
+                </div>
+                <h4 class="font-bold text-xs">Reliability Icon</h4>
+                <p class="text-[11px] text-stone-400">5.0 Star trust score</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Public Impact Analytics" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
+    <div class="border-b border-stone-200 dark:border-stone-800 pb-6 text-center max-w-2xl mx-auto space-y-2">
+        <span class="text-xs font-semibold uppercase tracking-wider text-leaf-600">{% trans "Transparency & Environmental Metrics" %}</span>
+        <h1 class="font-serif text-4xl font-bold">{% trans "Our Cumulative Impact" %}</h1>
+        <p class="text-xs text-stone-500">{% trans "Tracking every kilogram of food diverted from landfills to hungry bellies across India" %}</p>
+    </div>
+
+    <!-- Impact Cards Row -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm text-center space-y-1">
+            <span class="text-xs text-stone-400 uppercase font-semibold">{% trans "Meals Rescued" %}</span>
+            <div class="text-3xl font-serif font-bold text-leaf-600">{{ total_servings|floatformat:0 }}+</div>
+            <span class="text-[11px] text-stone-500 block">{% trans "Direct plate impact" %}</span>
+        </div>
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm text-center space-y-1">
+            <span class="text-xs text-stone-400 uppercase font-semibold">{% trans "Food Diverted" %}</span>
+            <div class="text-3xl font-serif font-bold text-leaf-600">{{ total_kg|floatformat:1 }} kg</div>
+            <span class="text-[11px] text-stone-500 block">{% trans "Diverted from decay" %}</span>
+        </div>
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm text-center space-y-1">
+            <span class="text-xs text-stone-400 uppercase font-semibold">{% trans "CO₂e Avoided" %}</span>
+            <div class="text-3xl font-serif font-bold text-saffron-500">{{ co2_avoided_kg|floatformat:1 }} kg</div>
+            <span class="text-[11px] text-stone-500 block">{% trans "Methane emissions avoided" %}</span>
+        </div>
+        <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm text-center space-y-1">
+            <span class="text-xs text-stone-400 uppercase font-semibold">{% trans "Verified Partners" %}</span>
+            <div class="text-3xl font-serif font-bold text-leaf-600">{{ active_ngos }} NGOs</div>
+            <span class="text-[11px] text-stone-500 block">{{ active_donors }} {% trans "Donors" %} • {{ active_volunteers }} {% trans "Volunteers" %}</span>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Monthly Trend Line Chart (8 cols) -->
+        <div class="lg:col-span-8 p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-4">
+            <h3 class="font-serif text-lg font-bold">{% trans "Monthly Food Rescue Trends (Servings)" %}</h3>
+            <div class="h-64 sm:h-80">
+                <canvas id="monthlyTrendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Food Type Doughnut Chart (4 cols) -->
+        <div class="lg:col-span-4 p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-4">
+            <h3 class="font-serif text-lg font-bold">{% trans "Food Type Distribution" %}</h3>
+            <div class="h-64 sm:h-80 flex items-center justify-center">
+                <canvas id="foodTypeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet Rescue Hotspots Heatmap -->
+    <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-4">
+        <div class="flex justify-between items-center">
+            <div>
+                <h3 class="font-serif text-lg font-bold">{% trans "Rescue Hotspots Heatmap" %}</h3>
+                <p class="text-xs text-stone-500">{% trans "Geographic intensity of food donation and pickup activity" %}</p>
+            </div>
+        </div>
+        <div id="impact-heatmap" class="h-96 w-full rounded-2xl border border-stone-200 dark:border-stone-700 z-10"></div>
+    </div>
+
+    <div class="text-center text-xs text-stone-400 max-w-xl mx-auto">
+        *{% trans "Calculation Methodology: Assumes standard benchmark of 0.40 kg food per meal. Greenhouse gas emissions factor of 2.5 kg CO₂e equivalent saved per kg of edible food diverted from organic waste streams." %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Line chart
+        var months = {{ months_json|safe }};
+        var servings = {{ servings_json|safe }};
+
+        var trendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: months,
+                datasets: [{
+                    label: 'Servings Rescued',
+                    data: servings,
+                    borderColor: '#16A34A',
+                    backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#16A34A',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Doughnut chart
+        var foodLabels = {{ food_labels_json|safe }};
+        var foodCounts = {{ food_counts_json|safe }};
+        var foodCtx = document.getElementById('foodTypeChart').getContext('2d');
+        new Chart(foodCtx, {
+            type: 'doughnut',
+            data: {
+                labels: foodLabels,
+                datasets: [{
+                    data: foodCounts,
+                    backgroundColor: ['#16A34A', '#F59E0B', '#3B82F6'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // Heatmap
+        var heatmapMap = L.map('impact-heatmap').setView([28.6139, 77.2090], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(heatmapMap);
+
+        var points = {{ heatmap_points_json|safe }};
+        if (points.length > 0) {
+            L.heatLayer(points, { radius: 25, blur: 15, maxZoom: 17 }).addTo(heatmapMap);
+        }
+    });
+</script>
+{% endblock %}

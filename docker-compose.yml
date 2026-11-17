@@ -1,0 +1,78 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: annasetu
+      POSTGRES_USER: annasetu
+      POSTGRES_PASSWORD: annasetupassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.dev
+      - DATABASE_URL=postgres://annasetu:annasetupassword@db:5432/annasetu
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=docker-insecure-key-12345
+      - DEBUG=True
+    depends_on:
+      - db
+      - redis
+
+  daphne:
+    build: .
+    command: daphne -b 0.0.0.0 -p 8001 config.asgi:application
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8001"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.dev
+      - DATABASE_URL=postgres://annasetu:annasetupassword@db:5432/annasetu
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=docker-insecure-key-12345
+    depends_on:
+      - db
+      - redis
+
+  celery:
+    build: .
+    command: celery -A config worker -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.dev
+      - DATABASE_URL=postgres://annasetu:annasetupassword@db:5432/annasetu
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    build: .
+    command: celery -A config beat -l info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.dev
+      - DATABASE_URL=postgres://annasetu:annasetupassword@db:5432/annasetu
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:

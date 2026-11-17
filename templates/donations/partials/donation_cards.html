@@ -1,0 +1,89 @@
+{% load i18n %}
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="donation-cards-grid">
+    {% for donation in page_obj %}
+    <div class="rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+        <!-- Card Image / Header -->
+        <div class="h-44 bg-stone-100 dark:bg-night-900 relative overflow-hidden">
+            {% if donation.photo %}
+            <img src="{{ donation.photo.url }}" alt="{{ donation.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+            {% else %}
+            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-leaf-100 to-leaf-200 dark:from-night-900 dark:to-night-800 text-leaf-700 dark:text-leaf-300">
+                <i data-lucide="utensils" class="w-12 h-12 opacity-40"></i>
+            </div>
+            {% endif %}
+
+            <!-- Urgency Badge -->
+            <div class="absolute top-3 left-3 flex gap-2">
+                {% if donation.is_urgent %}
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-500 text-white shadow-md animate-pulse">
+                    <i data-lucide="flame" class="w-3 h-3"></i> {% trans "Urgent" %}
+                </span>
+                {% endif %}
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/90 dark:bg-night-800/90 backdrop-blur-md text-stone-800 dark:text-stone-200 uppercase">
+                    {{ donation.get_food_type_display }}
+                </span>
+            </div>
+
+            <!-- Servings Pill -->
+            <div class="absolute bottom-3 right-3 px-3 py-1 rounded-xl text-xs font-bold bg-black/70 text-white backdrop-blur-md">
+                {{ donation.quantity_servings }} {% trans "servings" %}
+            </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+            <div>
+                <div class="flex items-center justify-between text-xs text-stone-400 mb-1">
+                    <span>{{ donation.donor.display_name|truncatechars:20 }}</span>
+                    <span class="flex items-center gap-0.5 text-stone-600 dark:text-stone-300 font-semibold">
+                        <i data-lucide="star" class="w-3 h-3 text-amber-500 fill-amber-500"></i>
+                        {{ donation.donor.reliability_score|floatformat:1 }}
+                    </span>
+                </div>
+                <h3 class="font-serif text-lg font-bold group-hover:text-leaf-600 transition-colors">
+                    <a href="{% url 'donation_detail' donation.id %}">{{ donation.title }}</a>
+                </h3>
+                <p class="text-xs text-stone-500 line-clamp-2 mt-1">
+                    {{ donation.description|default:donation.pickup_address }}
+                </p>
+            </div>
+
+            <div class="pt-3 border-t border-stone-100 dark:border-stone-700/60 flex items-center justify-between text-xs">
+                <!-- Expiry Countdown -->
+                <div class="flex items-center gap-1.5 text-stone-500">
+                    <i data-lucide="clock" class="w-3.5 h-3.5 text-stone-400"></i>
+                    <span>{% trans "Safe until" %} {{ donation.safe_until|time:"H:i" }}</span>
+                </div>
+
+                <a href="{% url 'donation_detail' donation.id %}" class="inline-flex items-center gap-1 font-semibold text-leaf-600 dark:text-leaf-400 hover:underline">
+                    {% trans "Details" %} &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full">
+        {% include "components/empty_state.html" with title="No food donations found" message="Try relaxing your filters or distance slider to find more surplus food." %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<div class="flex justify-center items-center gap-2 mt-10">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" hx-get="?page={{ page_obj.previous_page_number }}" hx-target="#donation-cards-grid" hx-swap="outerHTML" class="px-3 py-1.5 rounded-xl border border-stone-300 dark:border-stone-700 text-xs font-semibold hover:bg-stone-100 dark:hover:bg-night-800">
+        &larr; {% trans "Previous" %}
+    </a>
+    {% endif %}
+    <span class="text-xs text-stone-500">
+        {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}
+    </span>
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" hx-get="?page={{ page_obj.next_page_number }}" hx-target="#donation-cards-grid" hx-swap="outerHTML" class="px-3 py-1.5 rounded-xl border border-stone-300 dark:border-stone-700 text-xs font-semibold hover:bg-stone-100 dark:hover:bg-night-800">
+        {% trans "Next" %} &rarr;
+    </a>
+    {% endif %}
+</div>
+{% endif %}

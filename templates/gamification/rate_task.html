@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Rate Delivery Experience" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-12" x-data="{ score: 5 }">
+    <div class="p-8 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-xl space-y-6">
+        <div class="text-center space-y-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-leaf-600">{% trans "Trust & Reliability Rating" %}</span>
+            <h1 class="font-serif text-2xl font-bold">{% trans "Rate Your Handoff" %}</h1>
+            <p class="text-xs text-stone-500">{% trans "Rate" %} <strong>{{ to_user.display_name }}</strong> {% trans "for delivery of" %} "{{ task.donation.title }}"</p>
+        </div>
+
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <input type="hidden" name="score" :value="score">
+
+            <!-- Interactive Star Rating -->
+            <div class="flex justify-center items-center gap-2">
+                <template x-for="i in 5">
+                    <button type="button" @click="score = i" class="p-1 focus:outline-none transition-transform hover:scale-125">
+                        <i data-lucide="star" class="w-8 h-8 cursor-pointer" :class="{ 'text-amber-400 fill-amber-400': i <= score, 'text-stone-300': i > score }"></i>
+                    </button>
+                </template>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase text-stone-500 mb-1">{% trans "Comments or Feedback" %}</label>
+                {{ form.comment }}
+            </div>
+
+            <button type="submit" class="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md">
+                {% trans "Submit Rating" %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

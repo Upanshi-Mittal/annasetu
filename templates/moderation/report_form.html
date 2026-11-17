@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Report an Issue" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto px-4 py-12">
+    <div class="p-8 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-xl space-y-6">
+        <div class="border-b border-stone-100 dark:border-stone-700 pb-4">
+            <span class="text-xs font-semibold uppercase tracking-wider text-red-600">{% trans "Trust & Safety" %}</span>
+            <h1 class="font-serif text-2xl font-bold">{% trans "Report Abuse or Fraud" %}</h1>
+            <p class="text-xs text-stone-500">{% trans "Help us keep AnnaSetu safe and reliable for all communities." %}</p>
+        </div>
+
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-semibold uppercase text-stone-500 mb-1">{% trans "Reason" %}</label>
+                {{ form.reason }}
+            </div>
+            <div>
+                <label class="block text-xs font-semibold uppercase text-stone-500 mb-1">{% trans "Description & Evidence" %}</label>
+                {{ form.description }}
+            </div>
+            <button type="submit" class="w-full py-3.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 shadow-md">
+                {% trans "Submit Report" %}
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

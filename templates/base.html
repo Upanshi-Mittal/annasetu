@@ -1,0 +1,296 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" :class="{ 'dark': darkMode }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AnnaSetu — Food Rescue & Redistribution{% endblock %}</title>
+    <meta name="description" content="AnnaSetu connects surplus food to NGOs and community kitchens with verifiable QR chain of custody. No food wasted.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (with configured brand colors) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        leaf: {
+                            50: '#F0FDF4',
+                            100: '#DCFCE7',
+                            200: '#BBF7D0',
+                            500: '#22C55E',
+                            600: '#16A34A',
+                            700: '#15803D',
+                            800: '#166534',
+                            900: '#14532D',
+                            950: '#052E16',
+                        },
+                        saffron: {
+                            50: '#FFFBEB',
+                            100: '#FEF3C7',
+                            400: '#FBBF24',
+                            500: '#F59E0B',
+                            600: '#D97706',
+                            700: '#B45309',
+                        },
+                        night: {
+                            900: '#0B1410',
+                            800: '#111D18',
+                            700: '#192A23',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Fraunces', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        hindi: ['"Noto Sans Devanagari"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Leaflet CSS & JS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Leaflet Heatmap Plugin -->
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Alpine.js & HTMX -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- html5-qrcode for Camera scanning -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        .glass-nav {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-[#FAF8F3] dark:bg-night-900 text-stone-900 dark:text-stone-100 font-sans min-h-screen flex flex-col antialiased transition-colors duration-200">
+
+    <!-- Top Sticky Glass Navbar -->
+    <nav class="sticky top-0 z-50 glass-nav bg-[#FAF8F3]/85 dark:bg-night-900/85 border-b border-stone-200/80 dark:border-stone-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3">
+                    <a href="{% url 'landing' %}" class="flex items-center gap-2 group">
+                        <div class="w-10 h-10 rounded-xl bg-leaf-600 flex items-center justify-center text-white shadow-md shadow-leaf-600/20 group-hover:scale-105 transition-transform">
+                            <i data-lucide="utensils" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-serif text-2xl font-bold tracking-tight text-leaf-900 dark:text-leaf-50">Anna<span class="text-saffron-500">Setu</span></span>
+                    </a>
+
+                    <!-- Verification Warning Banner for unverified NGOs -->
+                    {% if user.is_authenticated and user.is_ngo and not user.is_verified %}
+                    <span class="hidden md:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                        <i data-lucide="clock" class="w-3.5 h-3.5"></i> {% trans "Awaiting verification" %}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Desktop Nav Links -->
+                <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                    <a href="{% url 'donation_list' %}" class="hover:text-leaf-600 dark:hover:text-leaf-400 transition-colors">{% trans "Food Feed" %}</a>
+                    <a href="{% url 'impact' %}" class="hover:text-leaf-600 dark:hover:text-leaf-400 transition-colors">{% trans "Impact" %}</a>
+                    <a href="{% url 'leaderboard' %}" class="hover:text-leaf-600 dark:hover:text-leaf-400 transition-colors">{% trans "Heroes" %}</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'task_list' %}" class="hover:text-leaf-600 dark:hover:text-leaf-400 transition-colors">{% trans "Deliveries" %}</a>
+                    {% endif %}
+                </div>
+
+                <!-- Right Actions: Language, Dark Mode, Notifications, User Menu -->
+                <div class="flex items-center space-x-3">
+                    <!-- Language Switcher -->
+                    <form action="{% url 'set_language' %}" method="post" class="inline">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <select name="language" onchange="this.form.submit()" class="text-xs bg-stone-100 dark:bg-night-800 border border-stone-300 dark:border-stone-700 rounded-lg px-2 py-1 cursor-pointer">
+                            {% get_current_language as CURRENT_LANG %}
+                            {% get_available_languages as LANGUAGES %}
+                            {% for lang in LANGUAGES %}
+                                <option value="{{ lang.0 }}" {% if lang.0 == CURRENT_LANG %}selected{% endif %}>
+                                    {{ lang.1 }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </form>
+
+                    <!-- Dark Mode Toggle -->
+                    <button @click="darkMode = !darkMode; localStorage.setItem('theme', darkMode ? 'dark' : 'light')"
+                            class="p-2 rounded-xl text-stone-600 dark:text-stone-300 hover:bg-stone-200/60 dark:hover:bg-night-800 transition-colors"
+                            aria-label="Toggle theme">
+                        <i x-show="!darkMode" data-lucide="moon" class="w-4 h-4"></i>
+                        <i x-show="darkMode" x-cloak data-lucide="sun" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Notifications Dropdown (If authenticated) -->
+                    {% if user.is_authenticated %}
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="relative p-2 rounded-xl text-stone-600 dark:text-stone-300 hover:bg-stone-200/60 dark:hover:bg-night-800">
+                            <i data-lucide="bell" class="w-4 h-4"></i>
+                            {% if unread_notification_count > 0 %}
+                            <span id="notification-badge" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-saffron-500 ring-2 ring-white dark:ring-night-900 animate-pulse"></span>
+                            {% endif %}
+                        </button>
+                        <div x-show="open" @click.outside="open = false" x-cloak class="absolute right-0 mt-2 w-80 bg-white dark:bg-night-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 py-2 z-50">
+                            <div class="px-4 py-2 border-b border-stone-100 dark:border-stone-700 flex justify-between items-center">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-stone-500">{% trans "Notifications" %}</span>
+                                <a href="{% url 'notification_list' %}" class="text-xs text-leaf-600 hover:underline">{% trans "View all" %}</a>
+                            </div>
+                            <div class="max-h-64 overflow-y-auto divide-y divide-stone-100 dark:divide-stone-700 text-sm">
+                                <div class="p-4 text-center text-stone-500 text-xs">{% trans "No new notifications" %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- User Account / Login CTA -->
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-semibold bg-stone-100 dark:bg-night-800 hover:bg-stone-200/60 transition-colors">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4 text-leaf-600"></i>
+                            <span>{{ user.display_name|truncatechars:15 }}</span>
+                        </a>
+                        {% if user.is_donor %}
+                        <a href="{% url 'donation_create' %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md shadow-leaf-600/25 transition-all">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> {% trans "Donate Food" %}
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'logout' %}" class="p-2 rounded-xl text-stone-500 hover:text-red-600" title="{% trans 'Logout' %}">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="text-sm font-medium hover:text-leaf-600 dark:hover:text-leaf-400">{% trans "Sign In" %}</a>
+                        <a href="{% url 'register' %}" class="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md shadow-leaf-600/25 transition-all">
+                            {% trans "Join Now" %}
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Global Messages / Toasts -->
+    {% if messages %}
+    <div class="max-w-4xl mx-auto px-4 mt-4 w-full">
+        {% for message in messages %}
+        <div class="flex items-center justify-between p-4 mb-2 rounded-xl text-sm shadow-sm border {% if message.tags == 'error' %}bg-red-50 border-red-200 text-red-800 dark:bg-red-950/40 dark:border-red-800 dark:text-red-300{% elif message.tags == 'success' %}bg-green-50 border-green-200 text-green-800 dark:bg-green-950/40 dark:border-green-800 dark:text-green-300{% else %}bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-300{% endif %}" role="alert">
+            <div class="flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+                <span>{{ message }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-stone-400 hover:text-stone-600"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Page Content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Mobile Bottom Tab Bar (Mobile First for Volunteers & Donors) -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-night-900/95 glass-nav border-t border-stone-200 dark:border-stone-800 py-2 px-4 flex justify-around items-center">
+        <a href="{% url 'landing' %}" class="flex flex-col items-center text-xs text-stone-600 dark:text-stone-400 hover:text-leaf-600">
+            <i data-lucide="home" class="w-5 h-5"></i>
+            <span>{% trans "Home" %}</span>
+        </a>
+        <a href="{% url 'donation_list' %}" class="flex flex-col items-center text-xs text-stone-600 dark:text-stone-400 hover:text-leaf-600">
+            <i data-lucide="utensils" class="w-5 h-5"></i>
+            <span>{% trans "Feed" %}</span>
+        </a>
+        {% if user.is_authenticated and user.is_donor %}
+        <a href="{% url 'donation_create' %}" class="flex flex-col items-center -mt-5 bg-leaf-600 text-white p-3 rounded-full shadow-lg shadow-leaf-600/40">
+            <i data-lucide="plus" class="w-6 h-6"></i>
+        </a>
+        {% else %}
+        <a href="{% url 'impact' %}" class="flex flex-col items-center text-xs text-stone-600 dark:text-stone-400 hover:text-leaf-600">
+            <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+            <span>{% trans "Impact" %}</span>
+        </a>
+        {% endif %}
+        {% if user.is_authenticated %}
+        <a href="{% url 'task_list' %}" class="flex flex-col items-center text-xs text-stone-600 dark:text-stone-400 hover:text-leaf-600">
+            <i data-lucide="truck" class="w-5 h-5"></i>
+            <span>{% trans "Tasks" %}</span>
+        </a>
+        <a href="{% url 'dashboard' %}" class="flex flex-col items-center text-xs text-stone-600 dark:text-stone-400 hover:text-leaf-600">
+            <i data-lucide="user" class="w-5 h-5"></i>
+            <span>{% trans "Profile" %}</span>
+        </a>
+        {% else %}
+        <a href="{% url 'login' %}" class="flex flex-col items-center text-xs text-stone-600 dark:text-stone-400 hover:text-leaf-600">
+            <i data-lucide="log-in" class="w-5 h-5"></i>
+            <span>{% trans "Login" %}</span>
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-stone-100 dark:bg-night-800 border-t border-stone-200 dark:border-stone-800 mt-16 pb-16 md:pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <span class="font-serif text-2xl font-bold tracking-tight text-leaf-900 dark:text-leaf-50">Anna<span class="text-saffron-500">Setu</span></span>
+                    <p class="mt-2 text-sm text-stone-600 dark:text-stone-400">
+                        Bridging surplus food to communities in need across India. No good food wasted, every handoff verifiable.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 mb-3">{% trans "Platform" %}</h4>
+                    <ul class="space-y-2 text-sm text-stone-600 dark:text-stone-400">
+                        <li><a href="{% url 'donation_list' %}" class="hover:text-leaf-600">{% trans "Explore Food Feed" %}</a></li>
+                        <li><a href="{% url 'impact' %}" class="hover:text-leaf-600">{% trans "Impact & Heatmap" %}</a></li>
+                        <li><a href="{% url 'leaderboard' %}" class="hover:text-leaf-600">{% trans "Hall of Heroes" %}</a></li>
+                        <li><a href="/api/docs/" class="hover:text-leaf-600">{% trans "API Docs (Swagger)" %}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 mb-3">{% trans "Safety & Trust" %}</h4>
+                    <ul class="space-y-2 text-sm text-stone-600 dark:text-stone-400">
+                        <li><span class="text-xs text-stone-500">QR Chain-of-Custody</span></li>
+                        <li><span class="text-xs text-stone-500">FSSAI Standard Guidelines</span></li>
+                        <li><span class="text-xs text-stone-500">Verified NGO Network</span></li>
+                        <li><a href="{% url 'report_create' %}" class="text-xs text-leaf-600 hover:underline">{% trans "Report an Issue" %}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider text-stone-900 dark:text-stone-100 mb-3">{% trans "Assumptions" %}</h4>
+                    <p class="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
+                        * Based on documented benchmarks: ~0.4 kg food per serving rescued; ~2.5 kg CO₂e greenhouse gas emissions prevented per kg of food diverted from landfills.
+                    </p>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-stone-200 dark:border-stone-700 text-xs text-center text-stone-500">
+                &copy; 2026 AnnaSetu Platform. Made with care for zero hunger.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Initialize Lucide Icons -->
+    <script>
+        lucide.createIcons();
+        document.addEventListener('htmx:afterSwap', function() {
+            lucide.createIcons();
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

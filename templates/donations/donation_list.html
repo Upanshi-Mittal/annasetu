@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Available Food Feed" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8" x-data="{ viewMode: 'list' }">
+    <!-- Header with title & List/Map Toggle -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-200 dark:border-stone-800 pb-6">
+        <div>
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span class="text-xs uppercase font-semibold text-leaf-600 tracking-wider">{% trans "Live Food Rescue Feed" %}</span>
+            </div>
+            <h1 class="font-serif text-3xl font-bold mt-1">{% trans "Rescue Surplus Food" %}</h1>
+            <p class="text-xs text-stone-500">{% trans "Verified listings ready for immediate claiming and pickup" %}</p>
+        </div>
+
+        <div class="flex items-center gap-2 bg-stone-100 dark:bg-night-800 p-1 rounded-2xl border border-stone-200 dark:border-stone-700">
+            <button @click="viewMode = 'list'" :class="{ 'bg-white dark:bg-night-700 shadow-sm text-leaf-700 dark:text-leaf-300': viewMode === 'list', 'text-stone-500': viewMode !== 'list' }" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i> {% trans "List" %}
+            </button>
+            <button @click="viewMode = 'map'; setTimeout(initListMap, 200)" :class="{ 'bg-white dark:bg-night-700 shadow-sm text-leaf-700 dark:text-leaf-300': viewMode === 'map', 'text-stone-500': viewMode !== 'map' }" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all">
+                <i data-lucide="map" class="w-3.5 h-3.5"></i> {% trans "Map View" %}
+            </button>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar (Powered by HTMX) -->
+    <form hx-get="{% url 'donation_list' %}" hx-target="#donation-cards-grid" hx-swap="outerHTML" hx-trigger="change, input delay:300ms from:input" class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Search -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">{% trans "Search Food" %}</label>
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-stone-400"></i>
+                    <input type="text" name="q" placeholder="{% trans 'e.g. rice, dal, sandwiches...' %}" class="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-night-900 focus:ring-2 focus:ring-leaf-500">
+                </div>
+            </div>
+
+            <!-- Food Type Filter -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">{% trans "Food Type" %}</label>
+                <select name="food_type" class="w-full px-4 py-2.5 rounded-xl text-sm border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-night-900 focus:ring-2 focus:ring-leaf-500">
+                    <option value="">{% trans "All Types" %}</option>
+                    <option value="veg">{% trans "Vegetarian" %}</option>
+                    <option value="nonveg">{% trans "Non-vegetarian" %}</option>
+                    <option value="jain">{% trans "Jain" %}</option>
+                </select>
+            </div>
+
+            <!-- Urgency Filter -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">{% trans "Urgency" %}</label>
+                <select name="urgency" class="w-full px-4 py-2.5 rounded-xl text-sm border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-night-900 focus:ring-2 focus:ring-leaf-500">
+                    <option value="">{% trans "All Listings" %}</option>
+                    <option value="urgent">🔥 {% trans "Expiring in < 2 Hours" %}</option>
+                </select>
+            </div>
+
+            <!-- Sort By -->
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-stone-500 mb-1">{% trans "Sort By" %}</label>
+                <select name="sort" class="w-full px-4 py-2.5 rounded-xl text-sm border border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-night-900 focus:ring-2 focus:ring-leaf-500">
+                    <option value="newest">{% trans "Newest First" %}</option>
+                    <option value="expiring">{% trans "Expiring Soonest" %}</option>
+                    <option value="quantity">{% trans "Largest Quantity" %}</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Distance Slider (If authenticated with location) -->
+        {% if user.is_authenticated and user.latitude %}
+        <div class="pt-3 border-t border-stone-100 dark:border-stone-700/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" x-data="{ dist: 15 }">
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <span class="text-xs font-semibold uppercase tracking-wider text-stone-500">{% trans "Distance Radius:" %}</span>
+                <input type="range" name="distance" min="1" max="50" x-model="dist" class="w-48 accent-leaf-600 cursor-pointer">
+                <span class="text-xs font-bold text-leaf-600" x-text="dist + ' km'">15 km</span>
+            </div>
+            <div class="text-[11px] text-stone-400">
+                {% trans "Filtering from your registered profile location" %}
+            </div>
+        </div>
+        {% endif %}
+    </form>
+
+    <!-- List View -->
+    <div x-show="viewMode === 'list'">
+        {% include "donations/partials/donation_cards.html" %}
+    </div>
+
+    <!-- Map View -->
+    <div x-show="viewMode === 'map'" x-cloak class="rounded-3xl border border-stone-200 dark:border-stone-700 overflow-hidden shadow-lg h-[650px] relative">
+        <div id="donations-feed-map" class="w-full h-full z-10"></div>
+    </div>
+</div>
+
+<script>
+    var feedMapInitialized = false;
+    function initListMap() {
+        if (feedMapInitialized) return;
+        var mapEl = document.getElementById('donations-feed-map');
+        if (!mapEl) return;
+
+        var map = L.map('donations-feed-map').setView([28.6139, 77.2090], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Fetch donations coordinates
+        fetch('/api/v1/donations/')
+            .then(res => res.json())
+            .then(data => {
+                var results = data.results || data;
+                var bounds = [];
+                results.forEach(d => {
+                    if (d.latitude && d.longitude) {
+                        var latlng = [d.latitude, d.longitude];
+                        bounds.push(latlng);
+                        var popup = `
+                            <div style="font-family: sans-serif; font-size: 12px; line-height: 1.4;">
+                                <strong>${d.title}</strong><br>
+                                <span>${d.quantity_servings} servings (${d.food_type})</span><br>
+                                <a href="/donations/${d.id}/" style="color: #16A34A; font-weight: bold; text-decoration: underline;">View & Claim &rarr;</a>
+                            </div>
+                        `;
+                        L.marker(latlng).bindPopup(popup).addTo(map);
+                    }
+                });
+                if (bounds.length > 0) {
+                    map.fitBounds(bounds, { padding: [40, 40] });
+                }
+            })
+            .catch(err => console.error(err));
+
+        feedMapInitialized = true;
+    }
+</script>
+{% endblock %}

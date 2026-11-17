@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Notifications" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+    <div class="flex justify-between items-center border-b border-stone-200 dark:border-stone-800 pb-4">
+        <div>
+            <h1 class="font-serif text-3xl font-bold">{% trans "Notifications" %}</h1>
+            <p class="text-xs text-stone-500">{% trans "Real-time rescue alerts, claim status updates, and milestones" %}</p>
+        </div>
+        <form action="{% url 'notification_mark_all_read' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="text-xs font-semibold text-leaf-600 hover:underline">
+                {% trans "Mark all as read" %}
+            </button>
+        </form>
+    </div>
+
+    <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm divide-y divide-stone-100 dark:divide-stone-700">
+        {% for n in notifications %}
+        <div class="py-4 flex items-start justify-between gap-4 {% if not n.is_read %}bg-leaf-50/50 dark:bg-leaf-950/20 -mx-6 px-6 rounded-2xl{% endif %}">
+            <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-stone-800 dark:text-stone-200">{{ n.title }}</span>
+                    {% if not n.is_read %}
+                    <span class="w-2 h-2 rounded-full bg-saffron-500"></span>
+                    {% endif %}
+                </div>
+                <p class="text-xs text-stone-500">{{ n.body }}</p>
+                <span class="text-[10px] text-stone-400 block">{{ n.created_at|timesince }} {% trans "ago" %}</span>
+            </div>
+            {% if n.url %}
+            <a href="{% url 'notification_mark_read' n.id %}" class="text-xs font-semibold text-leaf-600 hover:underline shrink-0">
+                {% trans "View" %} &rarr;
+            </a>
+            {% endif %}
+        </div>
+        {% empty %}
+        {% include "components/empty_state.html" with title="No notifications" message="You're all caught up! New alerts will appear here." %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+-r base.txt
+
+# Production
+psycopg2-binary>=2.9
+redis>=5.0
+celery>=5.3
+channels-redis>=4.2
+gunicorn>=21.2

@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+exclude = [
+    ".git",
+    "venv",
+    "staticfiles",
+    "media",
+    "migrations",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = [
+    "F403",  # star imports in settings
+    "F405",  # star import names
+    "E501",  # line length (handled by formatter)
+]

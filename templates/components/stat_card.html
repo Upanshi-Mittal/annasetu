@@ -1,0 +1,11 @@
+<!-- Component: Stat Card -->
+<div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-2">
+    <div class="flex items-center justify-between text-stone-500 text-xs font-semibold uppercase tracking-wider">
+        <span>{{ title }}</span>
+        {% if icon %}<i data-lucide="{{ icon }}" class="w-4 h-4 text-leaf-600"></i>{% endif %}
+    </div>
+    <div class="text-3xl font-serif font-bold text-stone-900 dark:text-stone-100">{{ value }}</div>
+    {% if subtitle %}
+    <div class="text-xs text-stone-400">{{ subtitle }}</div>
+    {% endif %}
+</div>

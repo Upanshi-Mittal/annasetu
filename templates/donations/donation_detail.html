@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ donation.title }} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8" x-data="{ claimModalOpen: false }">
+    <!-- Top breadcrumb & Status -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-stone-200 dark:border-stone-800 pb-6">
+        <div>
+            <a href="{% url 'donation_list' %}" class="text-xs text-leaf-600 hover:underline flex items-center gap-1 mb-2">
+                &larr; {% trans "Back to Food Feed" %}
+            </a>
+            <h1 class="font-serif text-3xl font-bold">{{ donation.title }}</h1>
+            <p class="text-xs text-stone-500 mt-1">{% trans "Posted by" %} <span class="font-semibold text-stone-800 dark:text-stone-200">{{ donation.donor.display_name }}</span> ({{ donation.donor.reliability_score|floatformat:1 }}★)</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+            {% include "components/badge.html" with label=donation.get_status_display type=donation.status %}
+            {% if donation.is_urgent %}
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white animate-pulse">🔥 {% trans "Urgent" %}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left: Image & Description -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Photo -->
+            <div class="rounded-3xl bg-stone-100 dark:bg-night-800 overflow-hidden border border-stone-200 dark:border-stone-700 h-72 sm:h-96 relative">
+                {% if donation.photo %}
+                <img src="{{ donation.photo.url }}" alt="{{ donation.title }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-leaf-100 to-leaf-200 dark:from-night-900 dark:to-night-800 text-leaf-700 dark:text-leaf-300">
+                    <i data-lucide="utensils" class="w-20 h-20 opacity-40"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-3">
+                <h3 class="font-serif text-lg font-bold">{% trans "About This Food" %}</h3>
+                <p class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
+                    {{ donation.description|default:"No special notes provided by donor." }}
+                </p>
+                <div class="pt-3 border-t border-stone-100 dark:border-stone-700 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                    <div>
+                        <span class="text-stone-400 block">{% trans "Food Type" %}</span>
+                        <strong class="capitalize">{{ donation.get_food_type_display }}</strong>
+                    </div>
+                    <div>
+                        <span class="text-stone-400 block">{% trans "Category" %}</span>
+                        <strong>{% if donation.is_cooked %}{% trans "Cooked Meal" %}{% else %}{% trans "Packaged / Dry" %}{% endif %}</strong>
+                    </div>
+                    <div>
+                        <span class="text-stone-400 block">{% trans "Total Servings" %}</span>
+                        <strong class="text-leaf-600 font-bold text-sm">{{ donation.quantity_servings }}</strong>
+                    </div>
+                    <div>
+                        <span class="text-stone-400 block">{% trans "Safe Until" %}</span>
+                        <strong class="text-red-500">{{ donation.safe_until|date:"M d, H:i" }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Smart Matching Breakdown (Admins / Donor Only) -->
+            {% if match_breakdown %}
+            <div class="p-6 rounded-3xl bg-stone-50 dark:bg-night-900 border border-stone-200 dark:border-stone-700 space-y-4">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-5 h-5 text-saffron-500"></i>
+                    <h3 class="font-serif text-base font-bold">{% trans "Smart Matching Breakdown" %}</h3>
+                </div>
+                <div class="space-y-3">
+                    {% for ms in match_breakdown %}
+                    <div class="p-3 rounded-2xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-sm text-stone-800 dark:text-stone-200">{{ ms.ngo_name }}</span>
+                            <div class="flex gap-2 text-stone-400 mt-1">
+                                {% for r in ms.reasons %}
+                                <span>• {{ r }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-leaf-600 text-sm">{{ ms.total_score|floatformat:1 }} pts</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Right: Action Sidebar -->
+        <div class="space-y-6">
+            <!-- Impact Card -->
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-leaf-700 to-leaf-900 text-white shadow-xl space-y-4">
+                <div class="text-xs font-semibold uppercase tracking-wider text-leaf-200">{% trans "Estimated Environmental Impact" %}</div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-2xl font-serif font-bold">{{ donation.kg_estimate }} kg</span>
+                        <span class="text-xs text-leaf-200 block">{% trans "Food diverted" %}</span>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-serif font-bold">{{ donation.co2_avoided }} kg</span>
+                        <span class="text-xs text-leaf-200 block">{% trans "CO₂e prevented" %}</span>
+                    </div>
+                </div>
+                <p class="text-[11px] text-leaf-300 leading-tight">
+                    *{% trans "Assumes ~0.4 kg/meal and 2.5 kg CO₂e saved per kg diverted." %}
+                </p>
+            </div>
+
+            <!-- Claim / Action Box -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-4">
+                <h4 class="font-serif font-bold">{% trans "Rescue Status" %}</h4>
+
+                {% if donation.status == 'posted' %}
+                    {% if user.is_authenticated and user.is_ngo and user.is_verified %}
+                    <button @click="claimModalOpen = true" class="w-full py-3 px-4 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md shadow-leaf-600/30 transition-all">
+                        {% trans "Claim This Food" %} &rarr;
+                    </button>
+                    {% elif user.is_authenticated and user.is_ngo and not user.is_verified %}
+                    <div class="p-4 rounded-2xl bg-amber-50 text-amber-800 text-xs">
+                        {% trans "Your NGO profile is awaiting verification. You will be able to claim once verified." %}
+                    </div>
+                    {% elif not user.is_authenticated %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="block text-center py-3 px-4 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md shadow-leaf-600/30 transition-all">
+                        {% trans "Log in as NGO to Claim" %}
+                    </a>
+                    {% endif %}
+
+                    {% if user == donation.donor %}
+                    <div class="flex gap-2 pt-2">
+                        <a href="{% url 'donation_edit' donation.id %}" class="flex-1 text-center py-2 px-3 rounded-xl border border-stone-300 dark:border-stone-700 text-xs font-semibold hover:bg-stone-50">
+                            {% trans "Edit Listing" %}
+                        </a>
+                        <form action="{% url 'donation_cancel' donation.id %}" method="post" class="flex-1">
+                            {% csrf_token %}
+                            <button type="submit" onclick="return confirm('Cancel this food listing?')" class="w-full py-2 px-3 rounded-xl border border-red-200 text-red-600 text-xs font-semibold hover:bg-red-50">
+                                {% trans "Cancel" %}
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                {% elif donation.status == 'delivered' %}
+                    <div class="p-4 rounded-2xl bg-green-50 text-green-800 text-xs text-center font-semibold">
+                        🎉 {% trans "Food Delivered & Rescued Successfully!" %}
+                    </div>
+                    {% if user == donation.donor %}
+                    <a href="{% url 'certificate_donation' donation.id %}" class="block text-center py-3 px-4 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md">
+                        <i data-lucide="download" class="w-4 h-4 inline mr-1"></i> {% trans "Download CSR Certificate" %}
+                    </a>
+                    {% endif %}
+                {% else %}
+                    <div class="p-4 rounded-2xl bg-stone-100 dark:bg-night-900 text-xs text-stone-600 dark:text-stone-300">
+                        {% trans "Listing status:" %} <strong>{{ donation.get_status_display }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Pickup Location Pin & Address -->
+            <div class="p-6 rounded-3xl bg-white dark:bg-night-800 border border-stone-200 dark:border-stone-700 shadow-sm space-y-3">
+                <span class="text-xs font-semibold uppercase tracking-wider text-stone-500 block">{% trans "Pickup Address" %}</span>
+                <p class="text-xs text-stone-600 dark:text-stone-300">{{ donation.pickup_address }}</p>
+                {% if donation.latitude and donation.longitude %}
+                <div id="detail-map" class="h-44 w-full rounded-2xl border border-stone-200 dark:border-stone-700 z-10"></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Claim Modal for NGOs -->
+    <div x-show="claimModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div @click.outside="claimModalOpen = false" class="bg-white dark:bg-night-800 rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 dark:border-stone-700 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-serif text-xl font-bold">{% trans "Claim Food Surplus" %}</h3>
+                <button @click="claimModalOpen = false" class="text-stone-400 hover:text-stone-600"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form action="{% url 'claim_create' donation.id %}" method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-stone-500 mb-1">{% trans "Servings to Claim" %}</label>
+                    {{ claim_form.servings_requested }}
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-stone-500 mb-1">{% trans "Notes for Donor" %}</label>
+                    {{ claim_form.note }}
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl text-sm font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md">
+                    {% trans "Confirm Claim" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if donation.latitude and donation.longitude %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var map = L.map('detail-map', { dragging: false, zoomControl: false }).setView([{{ donation.latitude }}, {{ donation.longitude }}], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+        L.marker([{{ donation.latitude }}, {{ donation.longitude }}]).addTo(map);
+    });
+</script>
+{% endif %}
+{% endblock %}

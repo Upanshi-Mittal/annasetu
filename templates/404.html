@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}404 — {% trans "Page Not Found" %} — AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center px-4 py-16 text-center">
+    <div class="max-w-md space-y-4">
+        <div class="font-serif text-6xl font-bold text-leaf-600">404</div>
+        <h1 class="font-serif text-2xl font-bold">{% trans "Oops, this plate is empty!" %}</h1>
+        <p class="text-xs text-stone-500">{% trans "The page you are looking for may have expired, moved, or never existed." %}</p>
+        <div class="pt-4">
+            <a href="{% url 'landing' %}" class="inline-flex items-center gap-1.5 px-6 py-3 rounded-xl text-xs font-semibold text-white bg-leaf-600 hover:bg-leaf-700 shadow-md">
+                &larr; {% trans "Return to AnnaSetu Home" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
